@@ -6,20 +6,23 @@ public enum PlayerInputMethod{
 	Controller
 };
 
-public class PlayerMove : MonoBehaviour {
+public class Player : MonoBehaviour {
+	public Camera lookCamera;
 	public PlayerInputMethod inputMethod = PlayerInputMethod.KeyboardMouse;
 	public float speed = 5f;
 	public Vector2 sensitivity = new Vector2(-5f, 5f);
 
 	Vector2 rot = new Vector2();
 
-	// Use this for initialization
 	void Start () {
 	
 	}
 	
-	// Update is called once per frame
 	void Update () {
+		HandleMovement();
+	}
+
+	void HandleMovement() {
 		Vector3 dir = Vector3.zero;
 		if(inputMethod == PlayerInputMethod.KeyboardMouse){
 			float dvz = Input.GetAxis("Vertical");
@@ -40,5 +43,9 @@ public class PlayerMove : MonoBehaviour {
 		dir = dir*speed;
 		dir.y = rigidbody.velocity.y;
 		rigidbody.velocity = dir;
+	}
+
+	void HandleCamera(){
+
 	}
 }
