@@ -15,7 +15,7 @@ public class FreeLook : MonoBehaviour {
 	public float distance;
 	public float radius;
 
-	Vector2 rotation;
+	public Vector2 rotation;
 
 	void Start() {
 		//Screen.showCursor = false;
