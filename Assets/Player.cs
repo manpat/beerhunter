@@ -49,6 +49,12 @@ public class Player : MonoBehaviour {
 
 			dr.x = Input.GetAxis("J1Z") * rotSensitivity.x;
 			dr.y = Input.GetAxis("J1W") * rotSensitivity.y;
+		}else if(inputMethod == PlayerInputMethod.Controller2){
+			dv.x = Input.GetAxis("J2X");
+			dv.z = -Input.GetAxis("J2Y");
+
+			dr.x = Input.GetAxis("J2Z") * rotSensitivity.x;
+			dr.y = Input.GetAxis("J2W") * rotSensitivity.y;
 		}
 
 		rot.x = Mathf.Clamp(rot.x + dr.x, rotClampX.x, rotClampX.y);
