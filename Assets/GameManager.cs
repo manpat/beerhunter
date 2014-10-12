@@ -2,12 +2,22 @@
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
+	static public GameManager main;
+
 	[SerializeField] private GameObject playerPrefab;
+
+	public Player[] players;
+	public Fridge[] fridges;
 
 	public Transform[] spawnPoints;
 
+	void Awake(){
+		main = this;
+	}
+
 	void Start () {
 		SpawnPlayers();
+		fridges = FindObjectsOfType<Fridge>();
 	}
 	
 	void Update () {
@@ -16,6 +26,7 @@ public class GameManager : MonoBehaviour {
 
 	void SpawnPlayers() {
 		PersistentGameState pgs = FindObjectOfType<PersistentGameState>();
+		players = new Player[2];
 
 		if(!pgs){ // This will ONLY happen when testing in unity
 			pgs = PersistentGameState.CreateDefault();
@@ -31,8 +42,18 @@ public class GameManager : MonoBehaviour {
 			r.x = i * 0.5f;
 			p.lookCamera.rect = r;
 			// p.skin = pgs.skin[i];
+
+			players[i] = p;
 		}
 
 		Destroy(pgs);
+	}
+
+	void SpawnBeer(){
+
+	}
+
+	public void Win(){
+		printf("WIN");
 	}
 }

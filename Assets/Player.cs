@@ -9,22 +9,31 @@ public enum PlayerInputMethod{
 };
 
 public class Player : MonoBehaviour {
+	[SerializeField] private Vector2 rotSensitivity = new Vector2(5f, 10f);
+	[SerializeField] private Vector2 rotClampX = new Vector2(0, 60f);
+	[SerializeField] private float cameraDist = 5f;
+	[SerializeField] private Vector2 rot = new Vector2();
+	[SerializeField] private float drunkWobbleAmt = 20f;
 	public PlayerInputMethod inputMethod = PlayerInputMethod.KeyboardMouse;
-	public Vector2 rotSensitivity = new Vector2(5f, 10f);
-	public Vector2 rotClampX = new Vector2(0, 60f);
 	public int playerNum = 0;
 	public Camera lookCamera;
-	public float cameraDist = 5f;
 	
-	public float speed = 5f;
+	[SerializeField] private float speed = 5f;
 
-	Vector2 rot = new Vector2();
+	// Game-centric data
+
+	public float drunkness = 0f; // [0, 1]
+	public float pee = 0f; // [0, 1]
+
+	float t = 0f;
 
 	void Start () {
 	
 	}
 	
 	void Update () {
+		t += Time.deltaTime;
+
 		HandleMovement();
 
 		Debug.DrawLine(transform.position, transform.position + transform.forward * 10f);
@@ -60,7 +69,10 @@ public class Player : MonoBehaviour {
 		rot.x = Mathf.Clamp(rot.x + dr.x, rotClampX.x, rotClampX.y);
 		rot.y += dr.y;
 
-		lookCamera.transform.rotation = Quaternion.Euler(rot.x, rot.y, 0);
+		float dwx = Mathf.Sin(t*2)*drunkness*drunkWobbleAmt*rotSensitivity.x;
+		float dwy = Mathf.Cos(t)*drunkness	*drunkWobbleAmt*rotSensitivity.y;
+
+		lookCamera.transform.rotation = Quaternion.Euler(rot.x + dwx, rot.y + dwy, 0);
 		lookCamera.transform.position = pos - lookCamera.transform.forward * cameraDist;
 
 		dir = transform.forward * dv.z;
