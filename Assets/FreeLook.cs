@@ -53,7 +53,7 @@ public class FreeLook : MonoBehaviour {
 		}
 
 		if ( sensitivity.x != 0 ) {
-			rotation.y = Mathf.Clamp( horizontal * sensitivity.x + rotation.y, minimum.x, maximum.x );
+			rotation.y = horizontal * sensitivity.x + rotation.y;
 		} else {
 			rotation.y = transform.localEulerAngles.y;
 		}
