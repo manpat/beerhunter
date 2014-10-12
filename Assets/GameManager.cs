@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
 			p.inputMethod = pgs.inputMethods[i];
 			
 			FreeLook fl = p.lookCamera.GetComponent< FreeLook >();
-			fl.inputMethod = pgs.inputMethods[i];
+			fl.inputMethod = pgs.inputMethods[ i ];
 			
 			var r = p.lookCamera.rect;
 			r.x = i * 0.5f;

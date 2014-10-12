@@ -11,7 +11,7 @@ public enum PlayerInputMethod{
 public class Player : MonoBehaviour {
 	[SerializeField] private Vector2 rotSensitivity = new Vector2(5f, 10f);
 	[SerializeField] private Vector2 rotClampX = new Vector2(0, 60f);
-	[SerializeField] private float cameraDist = 5f;
+	//[SerializeField] private float cameraDist = 5f;
 	[SerializeField] private Vector2 rot = new Vector2();
 	[SerializeField] private float drunkWobbleAmt = 20f;
 	public PlayerInputMethod inputMethod = PlayerInputMethod.KeyboardMouse;
@@ -35,6 +35,7 @@ public class Player : MonoBehaviour {
 		t += Time.deltaTime;
 
 		HandleMovement();
+		DrunkWobble();
 
 		Debug.DrawLine(transform.position, transform.position + transform.forward * 10f);
 	}
@@ -78,5 +79,16 @@ public class Player : MonoBehaviour {
 		dir = dir*speed;
 		dir.y = rigidbody.velocity.y;
 		rigidbody.velocity = dir;
+	}
+
+	void DrunkWobble() {
+		float delta = ( t / 2 ) % ( 2 * Mathf.PI );
+		float dizziness = drunkness * drunkWobbleAmt;
+
+		lookCamera.transform.parent.transform.localEulerAngles = new Vector3(
+			Mathf.Sin( delta ) * dizziness,
+			Mathf.Sin( delta * 2 ) * dizziness,
+			Mathf.Cos( delta ) * dizziness
+		);
 	}
 }
