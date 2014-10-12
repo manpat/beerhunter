@@ -58,6 +58,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void Win(){
-		printf("WIN");
+		print("WIN");
 	}
 }
