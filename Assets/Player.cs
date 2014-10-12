@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum PlayerInputMethod{
+public enum PlayerInputMethod {
 	None,
 	KeyboardMouse,
 	Controller,
@@ -9,16 +9,15 @@ public enum PlayerInputMethod{
 };
 
 public class Player : MonoBehaviour {
-	[SerializeField] private float drunkWobbleAmt = 20f;
 	public PlayerInputMethod inputMethod = PlayerInputMethod.KeyboardMouse;
 	public int playerNum = 0;
 	public Camera lookCamera;
 	public Camera fridgeCamera;
 
+	[SerializeField] private float drunkWobbleAmt = 10f;
 	[SerializeField] private float speed = 5f;
 
 	// Game-centric data
-
 	[SerializeField] private const float baseDrunknessPerBeer = 1f/6f;
 	[SerializeField] private const float basePeePerBeer = 1f/3f;
 
@@ -80,10 +79,6 @@ public class Player : MonoBehaviour {
 		float delta = ( t / 2 ) % ( 2 * Mathf.PI );
 		float dizziness = drunkness * drunkWobbleAmt;
 
-		lookCamera.transform.parent.transform.localEulerAngles = new Vector3(
-			Mathf.Sin( delta ) * dizziness,
-			Mathf.Sin( delta * 2 ) * dizziness,
-			Mathf.Cos( delta ) * dizziness
-		);
+		lookCamera.transform.parent.transform.localEulerAngles = new Vector3( Mathf.Sin( delta ) * dizziness, Mathf.Sin( delta * 2 ) * dizziness, Mathf.Cos( delta ) * dizziness );
 	}
 }
