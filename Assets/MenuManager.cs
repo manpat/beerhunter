@@ -6,7 +6,6 @@ public enum MainMenuState {
 	Instructions,
 	PlayerJoin,
 	CharacterSelect,
-
 };
 
 public class MenuManager : MonoBehaviour {

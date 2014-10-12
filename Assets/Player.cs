@@ -27,23 +27,15 @@ public class Player : MonoBehaviour {
 
 	float t = 0f;
 
-	void Start () {
-
-	}
-
 	void Update () {
 		t += Time.deltaTime;
 
 		HandleMovement();
 		DrunkWobble();
-
-		Debug.DrawLine(transform.position, transform.position + transform.forward * 10f);
 	}
 
 	void HandleMovement() {
 		Vector3 dir = Vector3.zero;
-		Vector3 pos = transform.position;
-
 		Vector3 dv = Vector3.zero;
 
 		if(inputMethod == PlayerInputMethod.KeyboardMouse){
@@ -57,7 +49,6 @@ public class Player : MonoBehaviour {
 		}else if(inputMethod == PlayerInputMethod.Controller2){
 			dv.x = Input.GetAxis("J2X");
 			dv.z = -Input.GetAxis("J2Y");
-
 		}
 
 		dir = transform.forward * dv.z;
@@ -69,10 +60,14 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnFridgeCollide(Fridge fridge){
-		if(fridge.hasBeer && pee >= 0.9f){
+		if(fridge.hasBeer && pee <= 0.9f){
 			drunkness += baseDrunknessPerBeer;
 			pee += basePeePerBeer;
-			fridge.hasBeer = false;
+
+			drunkness = Mathf.Clamp01(drunkness);
+			pee = Mathf.Clamp01(pee);
+
+			GameManager.main.OnPlayerGetBeer();
 		}
 	}
 

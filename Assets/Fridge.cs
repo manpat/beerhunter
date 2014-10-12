@@ -14,7 +14,6 @@ public class Fridge : MonoBehaviour {
 
 	void OnCollisionEnter(Collision col){
 		col.gameObject.SendMessage("OnFridgeCollide", this, SendMessageOptions.DontRequireReceiver);
-		hasBeer = false;
 	}
 
 	void SetVisible(bool v){

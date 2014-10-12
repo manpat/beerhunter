@@ -17,11 +17,9 @@ public class GameManager : MonoBehaviour {
 
 	void Start () {
 		SpawnPlayers();
+
 		fridges = FindObjectsOfType<Fridge>();
-	}
-	
-	void Update () {
-	
+		SpawnBeer();
 	}
 
 	void SpawnPlayers() {
@@ -55,7 +53,27 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void SpawnBeer(){
+		Fridge prevfridge = null;
+		foreach(Fridge f in fridges){
+			if(f.hasBeer){
+				prevfridge = f;
+				f.hasBeer = false;
+				break;
+			}
+		}
 
+		int idx = System.Array.IndexOf(fridges, prevfridge);
+		int next = (idx + (int)Random.Range(1, 3)) % fridges.Length;
+
+		fridges[next].hasBeer = true;
+	}
+
+	public void OnPlayerGetBeer(){
+		if(players[0].drunkness == 1f || players[1].drunkness == 1f){
+			Win();
+		}else{
+			SpawnBeer();
+		}
 	}
 
 	public void Win(){
