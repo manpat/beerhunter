@@ -15,15 +15,15 @@ public class Player : MonoBehaviour {
 	public int playerNum = 0;
 	public Camera lookCamera;
 	public float cameraDist = 5f;
-	
+
 	public float speed = 5f;
 
 	Vector2 rot = new Vector2();
 
 	void Start () {
-	
+
 	}
-	
+
 	void Update () {
 		HandleMovement();
 
@@ -60,8 +60,8 @@ public class Player : MonoBehaviour {
 		rot.x = Mathf.Clamp(rot.x + dr.x, rotClampX.x, rotClampX.y);
 		rot.y += dr.y;
 
-		lookCamera.transform.rotation = Quaternion.Euler(rot.x, rot.y, 0);
-		lookCamera.transform.position = pos - lookCamera.transform.forward * cameraDist;
+		//lookCamera.transform.rotation = Quaternion.Euler(rot.x, rot.y, 0);
+		//lookCamera.transform.position = pos - lookCamera.transform.forward * cameraDist;
 
 		dir = transform.forward * dv.z;
 		dir += transform.right * dv.x;
