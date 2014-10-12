@@ -9,10 +9,6 @@ public enum PlayerInputMethod{
 };
 
 public class Player : MonoBehaviour {
-	[SerializeField] private Vector2 rotSensitivity = new Vector2(5f, 10f);
-	[SerializeField] private Vector2 rotClampX = new Vector2(0, 60f);
-	//[SerializeField] private float cameraDist = 5f;
-	[SerializeField] private Vector2 rot = new Vector2();
 	[SerializeField] private float drunkWobbleAmt = 20f;
 	public PlayerInputMethod inputMethod = PlayerInputMethod.KeyboardMouse;
 	public int playerNum = 0;
@@ -49,7 +45,6 @@ public class Player : MonoBehaviour {
 		Vector3 pos = transform.position;
 
 		Vector3 dv = Vector3.zero;
-		// Vector2 dr = Vector3.zero;
 
 		if(inputMethod == PlayerInputMethod.KeyboardMouse){
 			dv.x = Input.GetAxis("Horizontal");
