@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
 	public PlayerInputMethod inputMethod = PlayerInputMethod.KeyboardMouse;
 	public int playerNum = 0;
 	public Camera lookCamera;
-	
+
 	[SerializeField] private float speed = 5f;
 
 	// Game-centric data
@@ -28,9 +28,9 @@ public class Player : MonoBehaviour {
 	float t = 0f;
 
 	void Start () {
-	
+
 	}
-	
+
 	void Update () {
 		t += Time.deltaTime;
 
@@ -69,11 +69,8 @@ public class Player : MonoBehaviour {
 		rot.x = Mathf.Clamp(rot.x + dr.x, rotClampX.x, rotClampX.y);
 		rot.y += dr.y;
 
-		float dwx = Mathf.Sin(t*2)*drunkness*drunkWobbleAmt*rotSensitivity.x;
-		float dwy = Mathf.Cos(t)*drunkness	*drunkWobbleAmt*rotSensitivity.y;
-
-		lookCamera.transform.rotation = Quaternion.Euler(rot.x + dwx, rot.y + dwy, 0);
-		lookCamera.transform.position = pos - lookCamera.transform.forward * cameraDist;
+		//lookCamera.transform.rotation = Quaternion.Euler(rot.x, rot.y, 0);
+		//lookCamera.transform.position = pos - lookCamera.transform.forward * cameraDist;
 
 		dir = transform.forward * dv.z;
 		dir += transform.right * dv.x;

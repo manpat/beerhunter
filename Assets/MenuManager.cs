@@ -56,7 +56,7 @@ public class MenuManager : MonoBehaviour {
 					pgs.inputMethods[numPlayersDetected] = im;
 					numPlayersDetected++;
 					print("PlayerJoin im: " + im.ToString());
-					statustm.text = "PlayerJoined with " + im.ToString();
+					statustm.text = "Player joined with " + im.ToString();
 				}
 
 				break;
