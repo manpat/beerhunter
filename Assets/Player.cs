@@ -17,10 +17,14 @@ public class Player : MonoBehaviour {
 	public PlayerInputMethod inputMethod = PlayerInputMethod.KeyboardMouse;
 	public int playerNum = 0;
 	public Camera lookCamera;
+	public Camera fridgeCamera;
 
 	[SerializeField] private float speed = 5f;
 
 	// Game-centric data
+
+	[SerializeField] private const float baseDrunknessPerBeer = 1f/6f;
+	[SerializeField] private const float basePeePerBeer = 1f/3f;
 
 	public float drunkness = 0f; // [0, 1]
 	public float pee = 0f; // [0, 1]
@@ -44,33 +48,21 @@ public class Player : MonoBehaviour {
 		Vector3 pos = transform.position;
 
 		Vector3 dv = Vector3.zero;
-		Vector2 dr = Vector3.zero;
+		// Vector2 dr = Vector3.zero;
 
 		if(inputMethod == PlayerInputMethod.KeyboardMouse){
 			dv.x = Input.GetAxis("Horizontal");
 			dv.z = Input.GetAxis("Vertical");
 
-			dr.x = Input.GetAxis("Mouse Y") * -rotSensitivity.x;
-			dr.y = Input.GetAxis("Mouse X") * rotSensitivity.y;
 		}else if(inputMethod == PlayerInputMethod.Controller){
 			dv.x = Input.GetAxis("J1X");
 			dv.z = -Input.GetAxis("J1Y");
 
-			dr.x = Input.GetAxis("J1Z") * rotSensitivity.x;
-			dr.y = Input.GetAxis("J1W") * rotSensitivity.y;
 		}else if(inputMethod == PlayerInputMethod.Controller2){
 			dv.x = Input.GetAxis("J2X");
 			dv.z = -Input.GetAxis("J2Y");
 
-			dr.x = Input.GetAxis("J2Z") * rotSensitivity.x;
-			dr.y = Input.GetAxis("J2W") * rotSensitivity.y;
 		}
-
-		rot.x = Mathf.Clamp(rot.x + dr.x, rotClampX.x, rotClampX.y);
-		rot.y += dr.y;
-
-		//lookCamera.transform.rotation = Quaternion.Euler(rot.x, rot.y, 0);
-		//lookCamera.transform.position = pos - lookCamera.transform.forward * cameraDist;
 
 		dir = transform.forward * dv.z;
 		dir += transform.right * dv.x;
@@ -78,5 +70,13 @@ public class Player : MonoBehaviour {
 		dir = dir*speed;
 		dir.y = rigidbody.velocity.y;
 		rigidbody.velocity = dir;
+	}
+
+	void OnFridgeCollide(Fridge fridge){
+		if(fridge.hasBeer && pee >= 0.9f){
+			drunkness += baseDrunknessPerBeer;
+			pee += basePeePerBeer;
+			fridge.hasBeer = false;
+		}
 	}
 }

@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour {
 			var r = p.lookCamera.rect;
 			r.x = i * 0.5f;
 			p.lookCamera.rect = r;
+			p.fridgeCamera.rect = r;
 			// p.skin = pgs.skin[i];
 
 			players[i] = p;

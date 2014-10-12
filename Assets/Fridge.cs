@@ -2,14 +2,26 @@
 using System.Collections;
 
 public class Fridge : MonoBehaviour {
+	[SerializeField] private bool _hasBeer = false;
 
-	// Use this for initialization
-	void Start () {
-	
+	public bool hasBeer {
+		get { return _hasBeer; }
+		set {
+			SetVisible(value);
+			_hasBeer = value;
+		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	void OnCollisionEnter(Collision col){
+		col.gameObject.SendMessage("OnFridgeCollide", this, SendMessageOptions.DontRequireReceiver);
+		hasBeer = false;
+	}
+
+	void SetVisible(bool v){
+		if(v){
+			gameObject.layer = LayerMask.NameToLayer("Fridge");
+		}else{
+			gameObject.layer = LayerMask.NameToLayer("Default");
+		}
 	}
 }
