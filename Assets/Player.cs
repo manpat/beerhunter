@@ -75,8 +75,6 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnFridgeCollide(Fridge fridge){
-		print( "collide fridge" );
-	
 		if(fridge.hasBeer && pee <= 0.9f){
 			drunkness += baseDrunknessPerBeer;
 			pee += basePeePerBeer;
@@ -96,10 +94,10 @@ public class Player : MonoBehaviour {
 		float delta = ( t / 2 ) % ( 2 * Mathf.PI );
 		float dizziness = drunkness * drunkWobbleAmt;
 
-		lookCamera.transform.parent.transform.localEulerAngles = 
-			new Vector3( 
-				Mathf.Sin( delta ) * dizziness, 
-				Mathf.Sin( delta * 2 ) * dizziness, 
+		lookCamera.transform.parent.transform.localEulerAngles =
+			new Vector3(
+				Mathf.Sin( delta ) * dizziness,
+				Mathf.Sin( delta * 2 ) * dizziness,
 				Mathf.Cos( delta ) * dizziness );
 	}
 }

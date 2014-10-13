@@ -32,14 +32,14 @@ public class GameManager : MonoBehaviour {
 
 		for(int i = 0; i < 2; i++){
 			GameObject o = (GameObject)Instantiate(playerPrefab, spawnPoints[i].position, Quaternion.identity);
-			
+
 			Player p = o.GetComponent<Player>();
 			p.playerNum = i;
 			p.inputMethod = pgs.inputMethods[i];
-			
+
 			FreeLook fl = p.lookCamera.GetComponent< FreeLook >();
 			fl.inputMethod = pgs.inputMethods[ i ];
-			
+
 			var r = p.lookCamera.rect;
 			r.x = i * 0.5f;
 			p.lookCamera.rect = r;
@@ -52,13 +52,16 @@ public class GameManager : MonoBehaviour {
 		Destroy(pgs);
 	}
 
-	void SpawnBeer(){
+	void SpawnBeer() {
 		Fridge prevfridge = null;
-		foreach(Fridge f in fridges){
-			if(f.hasBeer){
-				prevfridge = f;
-				f.hasBeer = false;
-				break;
+
+		if ( prevfridge == null ) {
+			foreach(Fridge f in fridges){
+				if(f.hasBeer){
+					prevfridge = f;
+					f.hasBeer = false;
+					break;
+				}
 			}
 		}
 

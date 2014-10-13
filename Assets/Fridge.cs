@@ -17,10 +17,6 @@ public class Fridge : MonoBehaviour {
 	}
 
 	void SetVisible(bool v){
-		if(v){
-			gameObject.layer = LayerMask.NameToLayer("Fridge");
-		}else{
-			gameObject.layer = LayerMask.NameToLayer("Default");
-		}
+		gameObject.GetComponent< MeshRenderer >().enabled = v;
 	}
 }
