@@ -75,6 +75,8 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnFridgeCollide(Fridge fridge){
+		print( "collide fridge" );
+	
 		if(fridge.hasBeer && pee <= 0.9f){
 			drunkness += baseDrunknessPerBeer;
 			pee += basePeePerBeer;

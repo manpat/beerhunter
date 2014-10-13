@@ -47,13 +47,13 @@ public class FreeLook : MonoBehaviour {
 		// Multiply the mouse axes by their sensitivity before clamping to their minimum and maximum extents.
 		// Negative or zero sensitivity can be used to respectively invert an axis or leave it unchanged.
 		if ( sensitivity.y != 0 ) {
-			rotation.x = Mathf.Clamp( vertical * sensitivity.y + rotation.x, minimum.y, maximum.y );
+			rotation.x = Mathf.Clamp( WrapEulerAngle( vertical * sensitivity.y + rotation.x ), minimum.y, maximum.y );
 		} else {
 			rotation.x = transform.localEulerAngles.x;
 		}
 
 		if ( sensitivity.x != 0 ) {
-			rotation.y = horizontal * sensitivity.x + rotation.y;
+			rotation.y = Mathf.Clamp( WrapEulerAngle( horizontal * sensitivity.x + rotation.y ), minimum.x, maximum.x );
 		} else {
 			rotation.y = transform.localEulerAngles.y;
 		}
@@ -65,7 +65,7 @@ public class FreeLook : MonoBehaviour {
 			transform.localPosition = transform.localRotation * Vector3.forward * distance;
 
 			// When there is an obstruction detected at the point of view.
-			if ( Physics.CheckSphere( transform.position, radius ) ) {
+			//if ( Physics.CheckSphere( transform.position, radius ) ) {
 				RaycastHit hit;
 
 				// Detect the location of the obstruction between the target and the point of view.
@@ -73,7 +73,19 @@ public class FreeLook : MonoBehaviour {
 					// Clear the point of view of the obstruction by moving it to the detected location.
 					transform.localPosition = transform.localRotation * Vector3.forward * hit.distance * Mathf.Sign( distance );
 				}
-			}
+			//}
 		}
+	}
+
+	float WrapEulerAngle( float angle ) {
+		if ( angle <= -360 ) {
+			angle += 360;
+		}
+
+		if ( angle >= 360 ) {
+			angle -= 360;
+		}
+
+		return angle;
 	}
 }
