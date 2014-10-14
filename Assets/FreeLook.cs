@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections;
 
 public class FreeLook : MonoBehaviour {
+	public LayerMask layerMask;
 	public PlayerInputMethod inputMethod;
 
 	public Vector2 sensitivity;
@@ -69,7 +70,7 @@ public class FreeLook : MonoBehaviour {
 				RaycastHit hit;
 
 				// Detect the location of the obstruction between the target and the point of view.
-				if ( Physics.SphereCast( transform.forward * -distance + transform.position, radius, -transform.forward, out hit, Mathf.Abs( distance ) ) ) {
+				if ( Physics.SphereCast( transform.forward * -distance + transform.position, radius, -transform.forward, out hit, Mathf.Abs( distance ), layerMask ) ) {
 					// Clear the point of view of the obstruction by moving it to the detected location.
 					transform.localPosition = transform.localRotation * Vector3.forward * hit.distance * Mathf.Sign( distance );
 				}

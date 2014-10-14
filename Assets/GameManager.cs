@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour {
 
 	public Transform[] spawnPoints;
 
+	private float timeTillNPCEvent = 0f;
+
 	void Awake(){
 		main = this;
 	}
@@ -20,6 +22,18 @@ public class GameManager : MonoBehaviour {
 
 		fridges = FindObjectsOfType<Fridge>();
 		SpawnBeer();
+
+		timeTillNPCEvent = Random.Range(2f, 5f);
+	}
+
+	void Update(){
+		timeTillNPCEvent -= Time.deltaTime;
+
+		if(timeTillNPCEvent <= 0f){
+			DoNPCEvent();
+
+			timeTillNPCEvent = Random.Range(2f, 5f);
+		}
 	}
 
 	void SpawnPlayers() {
@@ -69,6 +83,82 @@ public class GameManager : MonoBehaviour {
 		int next = (idx + (int)Random.Range(1, 3)) % fridges.Length;
 
 		fridges[next].hasBeer = true;
+	}
+
+	void DoNPCEvent(){
+		const float npcCheckRadius = 8f;
+		const float npcPanicCheckRadius = 50f;
+		int npcLayerMask = LayerMask.GetMask("NPC");
+		NPCBehaviour behaviour = NPCBehaviour.None;
+		{
+			float x = Random.value * 100f;
+
+			if(x < 20f){ // 20% chance 
+				behaviour = NPCBehaviour.Gather;
+			}else{
+				x -= 20f;
+				if(x < 40f){ // 40% chance
+					behaviour = NPCBehaviour.Converse;
+				}else{ // 40% chance
+					behaviour = NPCBehaviour.HitPlayer;
+				}
+			} 
+		}
+
+		Vector3 ppos = players[(Random.value > 0.5f)?0:1].transform.position;
+		Collider[] npcs = Physics.OverlapSphere(ppos, npcCheckRadius, npcLayerMask);
+		if(npcs == null || npcs.Length == 0){
+			npcs = Physics.OverlapSphere(ppos, npcPanicCheckRadius, npcLayerMask);
+		}
+
+		float eventLength = Random.Range(5f, 15f);
+
+		print("NPCEvent begun: "+ behaviour.ToString());
+
+		switch(behaviour){
+			case NPCBehaviour.Gather: {
+				NPC centerNPC = npcs[(int)(Random.value * npcs.Length)].GetComponent<NPC>();
+				Vector3 cpos = centerNPC.transform.position;
+				npcs = Physics.OverlapSphere(cpos, npcCheckRadius, npcLayerMask);
+
+				foreach(Collider c in npcs){
+					NPC n = c.GetComponent<NPC>();
+					n.toPos = cpos;
+					n.behaviour = behaviour;
+					n.behaviourLength = eventLength;
+				}
+
+				break;
+			}
+			case NPCBehaviour.Converse: {
+				NPC npc1 = npcs[(int)(Random.value * npcs.Length)].GetComponent<NPC>();
+				NPC npc2 = npcs[(int)(Random.value * npcs.Length)].GetComponent<NPC>();
+				
+				Vector3 midwaypoint = (npc1.transform.position + npc2.transform.position)/2f;
+				
+				npc1.toPos = midwaypoint;
+				npc1.behaviour = behaviour;
+				npc1.behaviourLength = eventLength;
+				npc2.toPos = midwaypoint;
+				npc2.behaviour = behaviour;
+				npc2.behaviourLength = eventLength;
+
+				break;
+			}
+			case NPCBehaviour.HitPlayer: {
+				NPC npc = npcs[(int)(Random.value * npcs.Length)].GetComponent<NPC>();
+				
+				npc.toPos = ppos;
+				npc.behaviour = behaviour;
+				npc.behaviourLength = eventLength;
+
+				break;
+			}
+
+			default:
+				print("Unimplemented behaviour, " + behaviour.ToString());
+				break;
+		}
 	}
 
 	public void OnPlayerGetBeer(){
