@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour {
 
 	public Transform[] spawnPoints;
 
+	public GameObject winQuad;
+	public TextMesh wintm;
+	public TextMesh windrunktm;
+
 	private float timeTillNPCEvent = 0f;
 
 	void Awake(){
@@ -18,6 +22,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Start () {
+		winQuad.SetActive(false);
 		SpawnPlayers();
 
 		fridges = FindObjectsOfType<Fridge>();
@@ -163,13 +168,16 @@ public class GameManager : MonoBehaviour {
 
 	public void OnPlayerGetBeer(){
 		if(players[0].drunkness == 1f || players[1].drunkness == 1f){
-			Win();
+			Win((players[0].drunkness>players[1].drunkness)?0:1);
 		}else{
 			SpawnBeer();
 		}
 	}
 
-	public void Win(){
+	public void Win(int who){
+		winQuad.SetActive(true);
+		wintm.text = "Player " + (who+1).ToString() + " wins!";
+		windrunktm.text = "Player " + (2-who).ToString() + " was only " + ((int)(players[1-who].drunkness*100f)).ToString() + "% drunk";
 		print("WIN");
 	}
 }

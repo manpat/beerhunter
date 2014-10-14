@@ -11,21 +11,19 @@ public enum MainMenuState {
 public class MenuManager : MonoBehaviour {
 	const int joystickButtonBegin = 350;
 
-	MainMenuState state = MainMenuState.Start;
+	MainMenuState state = MainMenuState.PlayerJoin;
 
 	PersistentGameState pgs;
 	int numPlayersDetected = 0;
 	bool[] inputMethodsUsed = new bool[4]; // PlayerInputMethod
 
-	public TextMesh statustm; //////////////////////////////////////////// Super hacky, remove pls
+	public TextMesh[] pim;
 
 	// Use this for initialization
 	void Start () {
 		GameObject o = new GameObject("GameSettings", typeof(PersistentGameState));
 		DontDestroyOnLoad(o);
 		pgs = o.GetComponent<PersistentGameState>();
-
-		statustm.text = "Press any key to start";
 	}
 	
 	// Update is called once per frame
@@ -34,7 +32,6 @@ public class MenuManager : MonoBehaviour {
 			case MainMenuState.Start:{
 				if(AnyButton()){
 					state = MainMenuState.PlayerJoin;
-					statustm.text = "Press button to join";
 				}
 				break;
 			}
@@ -53,9 +50,9 @@ public class MenuManager : MonoBehaviour {
 				if(!inputMethodsUsed[(int)im]){
 					inputMethodsUsed[(int)im] = true;
 					pgs.inputMethods[numPlayersDetected] = im;
+					pim[numPlayersDetected].text = im.ToString();
 					numPlayersDetected++;
 					print("PlayerJoin im: " + im.ToString());
-					statustm.text = "Player joined with " + im.ToString();
 				}
 
 				break;
