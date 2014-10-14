@@ -58,7 +58,7 @@ public class Player : MonoBehaviour {
 			dv.z = -Input.GetAxis("J2Y");
 		}
 
-		if(vel.magnitude > 0.03f){
+		if(vel.magnitude > 0.1f){
 			float velAng = Mathf.Atan2(vel.x, vel.z);
 			mesh.transform.rotation = Quaternion.Euler(0f, velAng*180f/Mathf.PI, 0f);
 		}

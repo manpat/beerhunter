@@ -17,6 +17,6 @@ public class Fridge : MonoBehaviour {
 	}
 
 	void SetVisible(bool v){
-		gameObject.GetComponent< MeshRenderer >().enabled = v;
+		gameObject.GetComponent<MeshRenderer>().enabled = v;
 	}
 }
