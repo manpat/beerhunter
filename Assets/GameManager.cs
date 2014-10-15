@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
 		if(timeTillNPCEvent <= 0f){
 			DoNPCEvent();
 
-			timeTillNPCEvent = Random.Range(2f, 5f);
+			timeTillNPCEvent = Random.Range(0.3f, 2f);
 		}
 	}
 
@@ -102,9 +102,9 @@ public class GameManager : MonoBehaviour {
 				behaviour = NPCBehaviour.Gather;
 			}else{
 				x -= 20f;
-				if(x < 40f){ // 40% chance
+				if(x < 30f){ // 30% chance
 					behaviour = NPCBehaviour.Converse;
-				}else{ // 40% chance
+				}else{ // 50% chance
 					behaviour = NPCBehaviour.HitPlayer;
 				}
 			} 
