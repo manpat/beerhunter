@@ -14,8 +14,12 @@ public class GameManager : MonoBehaviour {
 	public GameObject winQuad;
 	public TextMesh wintm;
 	public TextMesh windrunktm;
+	public TextMesh continuePrompt;
+
+	private bool win = false;
 
 	private float timeTillNPCEvent = 0f;
+	private float timeTillContinuePrompt = 0f;
 
 	void Awake(){
 		main = this;
@@ -33,11 +37,20 @@ public class GameManager : MonoBehaviour {
 
 	void Update(){
 		timeTillNPCEvent -= Time.deltaTime;
+		timeTillContinuePrompt -= Time.deltaTime;
 
 		if(timeTillNPCEvent <= 0f){
 			DoNPCEvent();
 
 			timeTillNPCEvent = Random.Range(0.3f, 2f);
+		}
+
+		if(win && timeTillContinuePrompt <= 0 && !continuePrompt.gameObject.activeSelf){
+			continuePrompt.gameObject.SetActive(true);
+		}
+
+		if(win && InputHelper.AnyButton() && timeTillContinuePrompt <= 0f){
+			Application.LoadLevel("menusc");
 		}
 	}
 
@@ -175,9 +188,14 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void Win(int who){
+		if(win) return;
+
+		win = true;
 		winQuad.SetActive(true);
 		wintm.text = "Player " + (who+1).ToString() + " wins!";
 		windrunktm.text = "Player " + (2-who).ToString() + " was only " + ((int)(players[1-who].drunkness*100f)).ToString() + "% drunk";
+		continuePrompt.gameObject.SetActive(false);
 		print("WIN");
+		timeTillContinuePrompt = 1.5f;
 	}
 }

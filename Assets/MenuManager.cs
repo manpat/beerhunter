@@ -9,8 +9,6 @@ public enum MainMenuState {
 };
 
 public class MenuManager : MonoBehaviour {
-	const int joystickButtonBegin = 350;
-
 	MainMenuState state = MainMenuState.PlayerJoin;
 
 	PersistentGameState pgs;
@@ -30,7 +28,7 @@ public class MenuManager : MonoBehaviour {
 	void Update () {
 		switch(state){
 			case MainMenuState.Start:{
-				if(AnyButton()){
+				if(InputHelper.AnyButton()){
 					state = MainMenuState.PlayerJoin;
 				}
 				break;
@@ -44,7 +42,7 @@ public class MenuManager : MonoBehaviour {
 					return;
 				}
 
-				PlayerInputMethod im = DetectInput();
+				PlayerInputMethod im = InputHelper.DetectInput();
 				if(im == PlayerInputMethod.None) break;
 
 				if(!inputMethodsUsed[(int)im]){
@@ -61,29 +59,6 @@ public class MenuManager : MonoBehaviour {
 				break;
 			}
 		}
-	}
-
-	static public bool AnyButton(){
-		if(Input.anyKeyDown) return true;
-
-		for(int i = 0; i < 40; ++i){
-			if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return true;
-		}
-
-		return false;
-	}
-
-	public PlayerInputMethod DetectInput(){
-		for(int i = 0; i < 20; ++i){
-			if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return PlayerInputMethod.Controller;
-		}
-		for(int i = 20; i < 40; ++i){
-			if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return PlayerInputMethod.Controller2;
-		}
-
-		if(Input.anyKeyDown) return PlayerInputMethod.KeyboardMouse;
-
-		return PlayerInputMethod.None;
 	}
 
 	public void StartGame(){
