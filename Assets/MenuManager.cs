@@ -26,6 +26,7 @@ public class MenuManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		Screen.lockCursor = false;
 		GameObject o = new GameObject("GameSettings", typeof(PersistentGameState));
 		DontDestroyOnLoad(o);
 		pgs = o.GetComponent<PersistentGameState>();
@@ -42,7 +43,8 @@ public class MenuManager : MonoBehaviour {
 			
 			case MainMenuState.PlayerJoin:{
 				if(numPlayersDetected == 2) {
-					state = MainMenuState.CharacterSelect;
+					// state = MainMenuState.CharacterSelect;
+					StartGame();
 					return;
 				}
 
@@ -84,6 +86,9 @@ public class MenuManager : MonoBehaviour {
 				break;
 			case "instruct":
 				state = MainMenuState.Instructions;
+				break;
+			case "back":
+				state = MainMenuState.Start;
 				break;
 			case "quit":
 				Application.Quit();

@@ -58,16 +58,16 @@ public class Player : MonoBehaviour {
 			dv.z = -Input.GetAxis("J2Y");
 		}
 
-		if(vel.magnitude > 0.1f){
-			float velAng = Mathf.Atan2(vel.x, vel.z);
-			mesh.transform.rotation = Quaternion.Euler(0f, velAng*180f/Mathf.PI, 0f);
-		}
-
 		float lookAng = -freeLook.rotation.y * Mathf.PI/180f;
 		Vector3 forward = new Vector3(-Mathf.Sin(lookAng), 0f, Mathf.Cos(lookAng));
 		Vector3 right = new Vector3(Mathf.Cos(lookAng), 0f, Mathf.Sin(lookAng));
 
 		dir = forward * dv.z + right * dv.x;
+
+		if(dir.magnitude > 0.01f){
+			float velAng = Mathf.Atan2(dir.x, dir.z)*180f/Mathf.PI;
+			mesh.transform.rotation = Quaternion.Euler(0f, velAng, 0f);
+		}
 
 		dir = dir*speed;
 		dir.y = vel.y;

@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour {
 
 	public Transform[] spawnPoints;
 
-	public GameObject winQuad;
+	public Transform winQuad;
+	public Camera endGameCam;
 	public TextMesh wintm;
 	public TextMesh windrunktm;
 	public TextMesh continuePrompt;
@@ -26,7 +27,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Start () {
-		winQuad.SetActive(false);
 		SpawnPlayers();
 
 		fridges = FindObjectsOfType<Fridge>();
@@ -51,6 +51,15 @@ public class GameManager : MonoBehaviour {
 
 		if(win && InputHelper.AnyButton() && timeTillContinuePrompt <= 0f){
 			Application.LoadLevel("start");
+		}
+
+		if(win){
+			Vector3 cpos = endGameCam.transform.position;
+			Vector3 diff = winQuad.position - cpos;
+
+			if(diff.magnitude > 0.01f){
+				endGameCam.transform.position = cpos + diff * 0.2f;
+			}
 		}
 	}
 
@@ -191,7 +200,6 @@ public class GameManager : MonoBehaviour {
 		if(win) return;
 
 		win = true;
-		winQuad.SetActive(true);
 		wintm.text = "Player " + (who+1).ToString() + " wins!";
 		windrunktm.text = "Player " + (2-who).ToString() + " was only " + ((int)(players[1-who].drunkness*100f)).ToString() + "% drunk";
 		continuePrompt.gameObject.SetActive(false);
