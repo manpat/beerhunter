@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour {
 		}
 
 		if(win && InputHelper.AnyButton() && timeTillContinuePrompt <= 0f){
-			Application.LoadLevel("menusc");
+			Application.LoadLevel("start");
 		}
 	}
 
