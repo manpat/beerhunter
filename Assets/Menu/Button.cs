@@ -7,9 +7,25 @@ public class Button : MonoBehaviour {
 	public Sprite normal;
 	public Sprite hover;
 
+	private bool _selected;
+	public bool Selected {
+		get{
+			return _selected;
+		}
+
+		set{
+			if(value){
+				OnMouseOver();
+			}else{
+				OnMouseExit();
+			}
+			_selected = value;
+		}
+	}
+
 	SpriteRenderer spriteRenderer;
 
-	void Start(){
+	void Awake(){
 		spriteRenderer = GetComponent<SpriteRenderer>();
 	}
 

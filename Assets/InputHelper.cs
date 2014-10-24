@@ -26,4 +26,22 @@ public class InputHelper : MonoBehaviour {
 
 		return PlayerInputMethod.None;
 	}
+
+	static float Sign(float x){
+		if(x == 0f) return 0f;
+
+		if(x > 0f) return 1f;
+		return -1f;
+	}
+
+	static public Vector2 AnyDir(){
+		Vector2 v = new Vector2();
+		v.x = Input.GetAxis("J1X") + Input.GetAxis("J2X");
+		v.y = Input.GetAxis("J1Y") + Input.GetAxis("J2Y");
+
+		v.x = Sign(v.x);
+		v.y = Sign(v.y);
+
+		return v;
+	}
 }

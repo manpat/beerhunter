@@ -20,6 +20,12 @@ public class MenuManager : MonoBehaviour {
 
 	public TextMesh[] pim;
 
+	public Button[] screenButtons;
+	private int buttonSelected = 0;
+
+	float instructionTimeout = 0f;
+	float inputTimeout = 0f;
+
 	void Awake(){
 		main = this;
 	}
@@ -30,15 +36,42 @@ public class MenuManager : MonoBehaviour {
 		GameObject o = new GameObject("GameSettings", typeof(PersistentGameState));
 		DontDestroyOnLoad(o);
 		pgs = o.GetComponent<PersistentGameState>();
+
+		foreach(Button b in screenButtons){
+			b.Selected = false;
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		switch(state){
-			case MainMenuState.Start:
+			case MainMenuState.Start:{
+				Vector2 j = InputHelper.AnyDir();
+				inputTimeout -= Time.deltaTime;
+
+				if(inputTimeout <= 0f && j.y != 0f){
+					screenButtons[buttonSelected].Selected = false;
+					buttonSelected = (buttonSelected + (int)j.y) % screenButtons.Length;
+					if(buttonSelected < 0f) buttonSelected += screenButtons.Length;
+					print(buttonSelected);
+					screenButtons[buttonSelected].Selected = true;
+
+					inputTimeout = 0.2f;
+				}
+
+				if(InputHelper.AnyButton()){
+					ButtonDown(screenButtons[buttonSelected].buttonName);
+				}
+
 				break;
+			}
 			
 			case MainMenuState.Instructions:
+				instructionTimeout -= Time.deltaTime;
+
+				if(instructionTimeout <= 0f && InputHelper.AnyButton()){
+					state = MainMenuState.Start;
+				}
 				break;
 			
 			case MainMenuState.PlayerJoin:{
@@ -78,7 +111,7 @@ public class MenuManager : MonoBehaviour {
 	}
 
 	public void ButtonDown(string buttonName){
-		print(buttonName + " pressed");
+		print(buttonName);
 
 		switch(buttonName){
 			case "start":
@@ -86,6 +119,7 @@ public class MenuManager : MonoBehaviour {
 				break;
 			case "instruct":
 				state = MainMenuState.Instructions;
+				instructionTimeout = 1f;
 				break;
 			case "back":
 				state = MainMenuState.Start;
@@ -93,7 +127,6 @@ public class MenuManager : MonoBehaviour {
 			case "quit":
 				Application.Quit();
 				break;
-
 		}
 	}
 }
