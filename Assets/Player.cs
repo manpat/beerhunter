@@ -75,19 +75,29 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnFridgeCollide(Fridge fridge){
-		if(fridge.hasBeer && pee <= 0.9f){
-			drunkness += baseDrunknessPerBeer;
-			pee += basePeePerBeer;
+		if(fridge.hasBeer){
+			if(pee + basePeePerBeer <= 1.01f){
+				drunkness += baseDrunknessPerBeer;
+				pee += basePeePerBeer;
 
-			drunkness = Mathf.Clamp01(drunkness);
-			pee = Mathf.Clamp01(pee);
+				drunkness = Mathf.Clamp01(drunkness);
+				pee = Mathf.Clamp01(pee);
 
-			GameManager.main.OnPlayerGetBeer();
+				GameManager.main.OnPlayerGetBeer();
+				GameManager.main.ShowPlayerMessage(playerNum, "got beer");
+
+				if(drunkness + baseDrunknessPerBeer >= 1f && !GameManager.main.win){
+					GameManager.main.ShowPlayerMessage(1-playerNum, "yo' better hurry!");
+				}
+			}else{
+				GameManager.main.ShowPlayerMessage(playerNum, "you need to pee");
+			}
 		}
 	}
 
 	void WhileInToilet(){
 		pee = Mathf.Clamp01(pee - Toilet.peeDrainPerSecond * Time.deltaTime);
+		GameManager.main.ShowPlayerMessage(playerNum, "aaaahhhhhh!");
 	}
 
 	void DrunkWobble() {

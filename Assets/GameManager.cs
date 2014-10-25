@@ -18,7 +18,16 @@ public class GameManager : MonoBehaviour {
 	public TextMesh windrunktm;
 	public TextMesh continuePrompt;
 
-	private bool win = false;
+	[Range(0.1f, 20f)]
+	public float textFadeTime = 1f;
+
+	public TextMesh allStatus;
+	public TextMesh[] playerStatus;
+
+	float allStatFade = 0f;
+	float[] playerStatFade = new float[2];
+
+	public bool win = false;
 
 	private float timeTillNPCEvent = 0f;
 	private float timeTillContinuePrompt = 0f;
@@ -34,11 +43,20 @@ public class GameManager : MonoBehaviour {
 		SpawnBeer();
 
 		timeTillNPCEvent = Random.Range(2f, 5f);
+
+		playerStatFade[0] = 0f;
+		playerStatFade[1] = 0f;
+
+		ShowMessage("GET DRUNK");
 	}
 
 	void Update(){
 		timeTillNPCEvent -= Time.deltaTime;
 		timeTillContinuePrompt -= Time.deltaTime;
+
+		allStatFade -= Time.deltaTime/textFadeTime;
+		playerStatFade[0] -= Time.deltaTime/textFadeTime;
+		playerStatFade[1] -= Time.deltaTime/textFadeTime;
 
 		if(timeTillNPCEvent <= 0f){
 			DoNPCEvent();
@@ -62,6 +80,10 @@ public class GameManager : MonoBehaviour {
 				endGameCam.transform.position = cpos + diff * 0.2f;
 			}
 		}
+
+		SetTextAlpha(allStatus, allStatFade);
+		SetTextAlpha(playerStatus[0], playerStatFade[0]);
+		SetTextAlpha(playerStatus[1], playerStatFade[1]);
 	}
 
 	void SpawnPlayers() {
@@ -192,6 +214,9 @@ public class GameManager : MonoBehaviour {
 	public void OnPlayerGetBeer(){
 		if(players[0].drunkness == 1f || players[1].drunkness == 1f){
 			Win((players[0].drunkness>players[1].drunkness)?0:1);
+			foreach(Fridge f in fridges){
+				f.hasBeer = false;
+			}
 		}else{
 			SpawnBeer();
 		}
@@ -201,10 +226,26 @@ public class GameManager : MonoBehaviour {
 		if(win) return;
 
 		win = true;
-		wintm.text = "Player " + (who+1).ToString() + " wins!";
-		windrunktm.text = "Player " + (2-who).ToString() + " was only " + ((int)(players[1-who].drunkness*100f)).ToString() + "% drunk";
+		wintm.text = "PLAYER " + (who+1).ToString() + " WINS!";
+		windrunktm.text = "player " + (2-who).ToString() + " was only " + ((int)(players[1-who].drunkness*100f)).ToString() + "% drunk";
 		continuePrompt.gameObject.SetActive(false);
 		print("WIN");
 		timeTillContinuePrompt = 1.5f;
+	}
+
+	void SetTextAlpha(TextMesh t, float a){
+		Color c = t.color;
+		c.a = a;
+		t.color = c;
+	}
+
+	public void ShowMessage(string _msg){
+		allStatus.text = _msg;
+		allStatFade = 1f;
+	}
+
+	public void ShowPlayerMessage(int p, string _msg){
+		playerStatus[p].text = _msg;
+		playerStatFade[p] = 1f;
 	}
 }
