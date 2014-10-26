@@ -27,6 +27,8 @@ public class Player : MonoBehaviour {
 	public float drunkness = 0f; // [0, 1]
 	public float pee = 0f; // [0, 1]
 
+	public float lookHintTimeout = 30f;
+
 	float t = 0f;
 
 	void Start(){
@@ -40,22 +42,57 @@ public class Player : MonoBehaviour {
 		DrunkWobble();
 	}
 
+	float timeWithoutLook = 0f;
+
 	void HandleMovement() {
 		Vector3 vel = rigidbody.velocity;
 		Vector3 dir = Vector3.zero;
 		Vector3 dv = Vector3.zero;
 
+		Vector2 lookV = Vector2.zero;
+
 		if(inputMethod == PlayerInputMethod.KeyboardMouse){
 			dv.x = Input.GetAxis("Horizontal");
 			dv.z = Input.GetAxis("Vertical");
+
+			lookV.x = Input.GetAxis("Mouse X");
+			lookV.y = Input.GetAxis("Mouse Y");
 
 		}else if(inputMethod == PlayerInputMethod.Controller){
 			dv.x = Input.GetAxis("J1X");
 			dv.z = -Input.GetAxis("J1Y");
 
+			lookV.x = Input.GetAxis("J1Z");
+			lookV.y = Input.GetAxis("J1W");
+
 		}else if(inputMethod == PlayerInputMethod.Controller2){
 			dv.x = Input.GetAxis("J2X");
 			dv.z = -Input.GetAxis("J2Y");
+
+			lookV.x = Input.GetAxis("J2Z");
+			lookV.y = Input.GetAxis("J2W");
+		}
+
+		if(lookV.magnitude < 1e-6){
+			timeWithoutLook += Time.deltaTime;
+
+			if(timeWithoutLook > lookHintTimeout){
+				switch(inputMethod){
+					case PlayerInputMethod.KeyboardMouse:
+						GameManager.main.ShowPlayerMessage(playerNum, "look with mouse");
+						break;
+
+					case PlayerInputMethod.Controller:
+					case PlayerInputMethod.Controller2:
+						GameManager.main.ShowPlayerMessage(playerNum, "look with right stick");
+						break;
+
+					default:
+					break;
+				}
+			}
+		}else{
+			timeWithoutLook = 0f;
 		}
 
 		float lookAng = -freeLook.rotation.y * Mathf.PI/180f;

@@ -84,6 +84,8 @@ public class GameManager : MonoBehaviour {
 		SetTextAlpha(allStatus, allStatFade);
 		SetTextAlpha(playerStatus[0], playerStatFade[0]);
 		SetTextAlpha(playerStatus[1], playerStatFade[1]);
+
+		FlashText(continuePrompt);
 	}
 
 	void SpawnPlayers() {
@@ -159,6 +161,10 @@ public class GameManager : MonoBehaviour {
 		Collider[] npcs = Physics.OverlapSphere(ppos, npcCheckRadius, npcLayerMask);
 		if(npcs == null || npcs.Length == 0){
 			npcs = Physics.OverlapSphere(ppos, npcPanicCheckRadius, npcLayerMask);
+		}
+		if(npcs == null || npcs.Length == 0){
+			print("No NPC's in range of player");
+			return;
 		}
 
 		float eventLength = Random.Range(5f, 15f);
@@ -247,5 +253,34 @@ public class GameManager : MonoBehaviour {
 	public void ShowPlayerMessage(int p, string _msg){
 		playerStatus[p].text = _msg;
 		playerStatFade[p] = 1f;
+	}
+
+	////////////////////////////////////////////////////////////////////////
+	///////////////////// Ignore everything below here /////////////////////
+	////////////////////////////////////////////////////////////////////////
+
+
+	static float hv = 1f;
+	static float lv = 0.2f;
+	static Color[] colours = {
+		new Color(hv, hv, lv),
+		new Color(hv, lv, hv),
+		new Color(lv, hv, hv),
+	};
+
+	int cc = 0;
+	float ft = 0f;
+	void FlashText(TextMesh t){
+		ft -= Time.deltaTime;
+		if(ft > 0) return;
+		ft = 1f/10f;
+
+		float a = t.color.a;
+		Color c = colours[cc];
+		c.a = a;
+		t.color = c;
+
+		cc++;
+		cc %= colours.Length;
 	}
 }
