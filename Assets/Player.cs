@@ -134,7 +134,7 @@ public class Player : MonoBehaviour {
 
 	void WhileInToilet(){
 		pee = Mathf.Clamp01(pee - Toilet.peeDrainPerSecond * Time.deltaTime);
-		GameManager.main.ShowPlayerMessage(playerNum, "aaaahhhhhh!");
+		GameManager.main.ShowPlayerMessage(playerNum, "*peeing*");
 	}
 
 	void DrunkWobble() {
