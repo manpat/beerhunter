@@ -5,6 +5,7 @@ public enum MainMenuState {
 	Start,
 	Instructions,
 	PlayerJoin,
+	InvertAxis,
 	CharacterSelect,
 };
 
@@ -19,6 +20,7 @@ public class MenuManager : MonoBehaviour {
 	bool[] inputMethodsUsed = new bool[4]; // PlayerInputMethod
 
 	public TextMesh[] pim;
+	public TextMesh[] pia;
 
 	public Button[] screenButtons;
 	private int buttonSelected = 0;
@@ -41,7 +43,7 @@ public class MenuManager : MonoBehaviour {
 			b.Selected = false;
 		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		switch(state){
@@ -65,7 +67,7 @@ public class MenuManager : MonoBehaviour {
 
 				break;
 			}
-			
+
 			case MainMenuState.Instructions:
 				instructionTimeout -= Time.deltaTime;
 
@@ -73,11 +75,15 @@ public class MenuManager : MonoBehaviour {
 					state = MainMenuState.Start;
 				}
 				break;
-			
+
 			case MainMenuState.PlayerJoin:{
 				if(numPlayersDetected == 2) {
 					// state = MainMenuState.CharacterSelect;
-					StartGame();
+					//StartGame();
+					pgs.invertAxes[ 0 ] = 2;
+					pgs.invertAxes[ 1 ] = 2;
+
+					state = MainMenuState.InvertAxis;
 					return;
 				}
 
@@ -90,6 +96,37 @@ public class MenuManager : MonoBehaviour {
 					pim[numPlayersDetected].text = im.ToString();
 					numPlayersDetected++;
 					print("PlayerJoin im: " + im.ToString());
+				}
+
+				break;
+			}
+			case MainMenuState.InvertAxis: {
+				Vector2 axes;
+
+				if ( pgs.invertAxes[ 0 ] == 2 ) { // Player 1
+					pia[ 0 ].text = "Choose";
+
+					axes = InputHelper.DetectAxes( pgs.inputMethods[ 0 ] );
+
+					if ( axes.x == 1 ) {
+						pgs.invertAxes[ 0 ] = 0;
+					} else if ( axes.x == -1 ) {
+						pgs.invertAxes[ 0 ] = 1; // Invert
+					}
+				} else if ( pgs.invertAxes[ 1 ] == 2 ) { // Player 2
+					pia[ 0 ].text = pgs.invertAxes[ 0 ] == 0 ? "Standard" : "Inverted";
+					pia[ 1 ].text = "Choose";
+
+					axes = InputHelper.DetectAxes( pgs.inputMethods[ 1 ] );
+
+					if ( axes.x == 1 ) {
+						pgs.invertAxes[ 1 ] = 0;
+					} else if ( axes.x == -1 ) {
+						pgs.invertAxes[ 1 ] = 1; // Invert
+					}
+				} else {
+					pia[ 1 ].text = pgs.invertAxes[ 1 ] == 0 ? "Standard" : "Inverted";
+					StartGame();
 				}
 
 				break;

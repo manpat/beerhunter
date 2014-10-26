@@ -12,10 +12,6 @@ public class Fridge : MonoBehaviour {
 		}
 	}
 
-	void OnCollisionEnter(Collision col){
-		col.gameObject.SendMessage("OnFridgeCollide", this, SendMessageOptions.DontRequireReceiver);
-	}
-
 	void SetVisible(bool v){
 		gameObject.GetComponent<MeshRenderer>().enabled = v;
 	}

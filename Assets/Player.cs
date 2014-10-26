@@ -111,8 +111,11 @@ public class Player : MonoBehaviour {
 		rigidbody.velocity = dir;
 	}
 
-	void OnFridgeCollide(Fridge fridge){
-		if(fridge.hasBeer){
+	//void OnFridgeCollide(Fridge fridge){
+	void OnTriggerEnter( Collider other ) {
+		Fridge fridge = other.GetComponent< Fridge >();
+
+		if ( fridge && fridge.hasBeer ) {
 			if(pee + basePeePerBeer <= 1.01f){
 				drunkness += baseDrunknessPerBeer;
 				pee += basePeePerBeer;

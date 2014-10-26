@@ -44,4 +44,21 @@ public class InputHelper : MonoBehaviour {
 
 		return v;
 	}
+
+	static public Vector2 DetectAxes( PlayerInputMethod inputMethod ) {
+		Vector2 axes = Vector2.zero;
+
+		if ( inputMethod == PlayerInputMethod.KeyboardMouse ) {
+			axes.x = Input.GetAxisRaw( "Horizontal" );
+			axes.y = Input.GetAxisRaw( "Vertical" );
+		} else if ( inputMethod == PlayerInputMethod.Controller ) {
+			axes.x = Input.GetAxisRaw( "J1X" );
+			axes.y = Input.GetAxisRaw( "J1Y" );
+		} else if ( inputMethod == PlayerInputMethod.Controller2 ) {
+			axes.x = Input.GetAxisRaw( "J2X" );
+			axes.y = Input.GetAxisRaw( "J2Y" );
+		}
+
+		return axes;
+	}
 }

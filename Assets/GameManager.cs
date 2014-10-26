@@ -105,6 +105,7 @@ public class GameManager : MonoBehaviour {
 
 			FreeLook fl = p.lookCamera.GetComponent< FreeLook >();
 			fl.inputMethod = pgs.inputMethods[ i ];
+			fl.sensitivity.y *= pgs.invertAxes[ i ] == 0 ? 1 : -1;
 
 			var r = p.lookCamera.rect;
 			r.x = i * 0.5f;

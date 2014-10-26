@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PersistentGameState : MonoBehaviour {
 	public PlayerInputMethod[] inputMethods = new PlayerInputMethod[2];
+	public int[] invertAxes = new int[ 2 ];
 	// skin data
 
 	public static PersistentGameState CreateDefault(){
