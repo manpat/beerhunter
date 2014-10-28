@@ -125,6 +125,8 @@ public class Player : MonoBehaviour {
 
 				GameManager.main.OnPlayerGetBeer();
 				GameManager.main.ShowPlayerMessage(playerNum, "got beer");
+				
+				Sounds.inst.OnDrink();
 
 				if(drunkness + baseDrunknessPerBeer >= 1f && !GameManager.main.win){
 					GameManager.main.ShowPlayerMessage(1-playerNum, "yo' better hurry!");
@@ -134,7 +136,15 @@ public class Player : MonoBehaviour {
 			}
 		}
 	}
+	
+	void EnterToilet() {
+		Sounds.inst.OnPee();
+	}
 
+	void ExitToilet() {
+		Sounds.inst.OnFlush();
+	}
+	
 	void WhileInToilet(){
 		pee = Mathf.Clamp01(pee - Toilet.peeDrainPerSecond * Time.deltaTime);
 		GameManager.main.ShowPlayerMessage(playerNum, "*peeing*");
