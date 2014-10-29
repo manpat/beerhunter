@@ -34,7 +34,7 @@ public class FreeLook : MonoBehaviour {
 
 		if ( inputMethod == PlayerInputMethod.KeyboardMouse ) {
 			horizontal = Input.GetAxis( "Mouse X" );
-			vertical = Input.GetAxis( "Mouse Y" );
+			vertical = -Input.GetAxis( "Mouse Y" );
 		} else if ( inputMethod == PlayerInputMethod.Controller ) {
 			horizontal = Input.GetAxis( "J1Z" );
 			vertical = Input.GetAxis( "J1W" );
