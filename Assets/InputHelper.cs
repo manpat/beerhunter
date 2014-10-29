@@ -2,7 +2,8 @@
 using System.Collections;
 
 public class InputHelper : MonoBehaviour {
-	static int joystickButtonBegin = 350;
+	static int keyboardEnd = (int)KeyCode.JoystickButton0;
+	static int joystickButtonBegin = (int)KeyCode.Joystick1Button0;
 
 	static public bool AnyButton(){
 		if(Input.anyKeyDown) return true;
@@ -65,7 +66,10 @@ public class InputHelper : MonoBehaviour {
 	static public bool DetectAny( PlayerInputMethod inputMethod ){
 		switch(inputMethod){
 			case PlayerInputMethod.KeyboardMouse:
-				return Input.anyKeyDown;
+				for(int i = 0; i < keyboardEnd; ++i){
+					if(Input.GetKeyDown( (KeyCode)i )) return true;
+				}
+				break;
 
 			case PlayerInputMethod.Controller:
 				for(int i = 0; i < 20; ++i){

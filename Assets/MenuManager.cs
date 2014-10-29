@@ -19,7 +19,7 @@ public class MenuManager : MonoBehaviour {
 	int numPlayersDetected = 0;
 	bool[] inputMethodsUsed = new bool[4]; // PlayerInputMethod
 	bool[] playerReady = new bool[2];
-	float startgameCountdown = 1f;
+	float startgameCountdown = 3f;
 
 	public TextMesh[] pim;
 	public TextMesh[] pia;
@@ -143,9 +143,11 @@ public class MenuManager : MonoBehaviour {
 
 				if(playerReady[0] && playerReady[1]){
 					startgameCountdown -= Time.deltaTime;
+					countdownText.text = Mathf.Floor(startgameCountdown + 0.5f).ToString();
 
-					if(startgameCountdown <= 0f)
+					if(startgameCountdown <= 0f){
 						StartGame();
+					}
 				}
 
 				break;
