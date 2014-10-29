@@ -27,6 +27,8 @@ public class Player : MonoBehaviour {
 	public float drunkness = 0f; // [0, 1]
 	public float pee = 0f; // [0, 1]
 
+	public float lookHintTimeout = 30f;
+
 	float t = 0f;
 
 	void Start(){
@@ -40,27 +42,57 @@ public class Player : MonoBehaviour {
 		DrunkWobble();
 	}
 
+	float timeWithoutLook = 0f;
+
 	void HandleMovement() {
 		Vector3 vel = rigidbody.velocity;
 		Vector3 dir = Vector3.zero;
 		Vector3 dv = Vector3.zero;
 
+		Vector2 lookV = Vector2.zero;
+
 		if(inputMethod == PlayerInputMethod.KeyboardMouse){
 			dv.x = Input.GetAxis("Horizontal");
 			dv.z = Input.GetAxis("Vertical");
+
+			lookV.x = Input.GetAxis("Mouse X");
+			lookV.y = Input.GetAxis("Mouse Y");
 
 		}else if(inputMethod == PlayerInputMethod.Controller){
 			dv.x = Input.GetAxis("J1X");
 			dv.z = -Input.GetAxis("J1Y");
 
+			lookV.x = Input.GetAxis("J1Z");
+			lookV.y = Input.GetAxis("J1W");
+
 		}else if(inputMethod == PlayerInputMethod.Controller2){
 			dv.x = Input.GetAxis("J2X");
 			dv.z = -Input.GetAxis("J2Y");
+
+			lookV.x = Input.GetAxis("J2Z");
+			lookV.y = Input.GetAxis("J2W");
 		}
 
-		if(vel.magnitude > 0.1f){
-			float velAng = Mathf.Atan2(vel.x, vel.z);
-			mesh.transform.rotation = Quaternion.Euler(0f, velAng*180f/Mathf.PI, 0f);
+		if(lookV.magnitude < 1e-6){
+			timeWithoutLook += Time.deltaTime;
+
+			if(timeWithoutLook > lookHintTimeout){
+				switch(inputMethod){
+					case PlayerInputMethod.KeyboardMouse:
+						GameManager.main.ShowPlayerMessage(playerNum, "look with mouse");
+						break;
+
+					case PlayerInputMethod.Controller:
+					case PlayerInputMethod.Controller2:
+						GameManager.main.ShowPlayerMessage(playerNum, "look with right stick");
+						break;
+
+					default:
+					break;
+				}
+			}
+		}else{
+			timeWithoutLook = 0f;
 		}
 
 		float lookAng = -freeLook.rotation.y * Mathf.PI/180f;
@@ -69,25 +101,53 @@ public class Player : MonoBehaviour {
 
 		dir = forward * dv.z + right * dv.x;
 
+		if(dir.magnitude > 0.01f){
+			float velAng = Mathf.Atan2(dir.x, dir.z)*180f/Mathf.PI;
+			mesh.transform.rotation = Quaternion.Euler(0f, velAng, 0f);
+		}
+
 		dir = dir*speed;
 		dir.y = vel.y;
 		rigidbody.velocity = dir;
 	}
 
-	void OnFridgeCollide(Fridge fridge){
-		if(fridge.hasBeer && pee <= 0.9f){
-			drunkness += baseDrunknessPerBeer;
-			pee += basePeePerBeer;
+	//void OnFridgeCollide(Fridge fridge){
+	void OnTriggerEnter( Collider other ) {
+		Fridge fridge = other.GetComponent< Fridge >();
 
-			drunkness = Mathf.Clamp01(drunkness);
-			pee = Mathf.Clamp01(pee);
+		if ( fridge && fridge.hasBeer ) {
+			if(pee + basePeePerBeer <= 1.01f){
+				drunkness += baseDrunknessPerBeer;
+				pee += basePeePerBeer;
 
-			GameManager.main.OnPlayerGetBeer();
+				drunkness = Mathf.Clamp01(drunkness);
+				pee = Mathf.Clamp01(pee);
+
+				GameManager.main.OnPlayerGetBeer();
+				GameManager.main.ShowPlayerMessage(playerNum, "got beer");
+				
+				Sounds.inst.OnDrink();
+
+				if(drunkness + baseDrunknessPerBeer >= 1f && !GameManager.main.win){
+					GameManager.main.ShowPlayerMessage(1-playerNum, "yo' better hurry!");
+				}
+			}else{
+				GameManager.main.ShowPlayerMessage(playerNum, "you need to pee");
+			}
 		}
 	}
+	
+	void EnterToilet() {
+		Sounds.inst.OnPee();
+	}
 
+	void ExitToilet() {
+		Sounds.inst.OnFlush();
+	}
+	
 	void WhileInToilet(){
 		pee = Mathf.Clamp01(pee - Toilet.peeDrainPerSecond * Time.deltaTime);
+		GameManager.main.ShowPlayerMessage(playerNum, "*peeing*");
 	}
 
 	void DrunkWobble() {

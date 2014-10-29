@@ -5,46 +5,89 @@ public enum MainMenuState {
 	Start,
 	Instructions,
 	PlayerJoin,
+	InvertAxis,
 	CharacterSelect,
 };
 
 public class MenuManager : MonoBehaviour {
-	const int joystickButtonBegin = 350;
+	static public MenuManager main;
 
-	MainMenuState state = MainMenuState.PlayerJoin;
+	[SerializeField] private MainMenuState state = MainMenuState.Start;
+	public GameObject[] screens;
 
 	PersistentGameState pgs;
 	int numPlayersDetected = 0;
 	bool[] inputMethodsUsed = new bool[4]; // PlayerInputMethod
 
 	public TextMesh[] pim;
+	public TextMesh[] pia;
+
+	public Button[] screenButtons;
+	private int buttonSelected = 0;
+
+	float instructionTimeout = 0f;
+	float inputTimeout = 0f;
+
+	void Awake(){
+		main = this;
+	}
 
 	// Use this for initialization
 	void Start () {
+		Screen.lockCursor = false;
 		GameObject o = new GameObject("GameSettings", typeof(PersistentGameState));
 		DontDestroyOnLoad(o);
 		pgs = o.GetComponent<PersistentGameState>();
+
+		foreach(Button b in screenButtons){
+			b.Selected = false;
+		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		switch(state){
 			case MainMenuState.Start:{
-				if(AnyButton()){
-					state = MainMenuState.PlayerJoin;
+				Vector2 j = InputHelper.AnyDir();
+				inputTimeout -= Time.deltaTime;
+
+				if(inputTimeout <= 0f && j.y != 0f){
+					screenButtons[buttonSelected].Selected = false;
+					buttonSelected = (buttonSelected + (int)j.y) % screenButtons.Length;
+					if(buttonSelected < 0f) buttonSelected += screenButtons.Length;
+					print(buttonSelected);
+					screenButtons[buttonSelected].Selected = true;
+
+					inputTimeout = 0.2f;
+				}
+
+				if(InputHelper.AnyButton()){
+					ButtonDown(screenButtons[buttonSelected].buttonName);
+				}
+
+				break;
+			}
+
+			case MainMenuState.Instructions:
+				instructionTimeout -= Time.deltaTime;
+
+				if(instructionTimeout <= 0f && InputHelper.AnyButton()){
+					state = MainMenuState.Start;
 				}
 				break;
-			}
-			case MainMenuState.Instructions:{
-				break;
-			}
+
 			case MainMenuState.PlayerJoin:{
 				if(numPlayersDetected == 2) {
-					StartGame();
+					// state = MainMenuState.CharacterSelect;
+					//StartGame();
+					pgs.invertAxes[ 0 ] = 2;
+					pgs.invertAxes[ 1 ] = 2;
+
+					state = MainMenuState.InvertAxis;
 					return;
 				}
 
-				PlayerInputMethod im = DetectInput();
+				PlayerInputMethod im = InputHelper.DetectInput();
 				if(im == PlayerInputMethod.None) break;
 
 				if(!inputMethodsUsed[(int)im]){
@@ -57,36 +100,70 @@ public class MenuManager : MonoBehaviour {
 
 				break;
 			}
-			case MainMenuState.CharacterSelect:{
+			case MainMenuState.InvertAxis: {
+				Vector2 axes;
+
+				if ( pgs.invertAxes[ 0 ] == 2 ) { // Player 1
+					pia[ 0 ].text = "Choose";
+
+					axes = InputHelper.DetectAxes( pgs.inputMethods[ 0 ] );
+
+					if ( axes.x == 1 ) {
+						pgs.invertAxes[ 0 ] = 0;
+					} else if ( axes.x == -1 ) {
+						pgs.invertAxes[ 0 ] = 1; // Invert
+					}
+				} else if ( pgs.invertAxes[ 1 ] == 2 ) { // Player 2
+					pia[ 0 ].text = pgs.invertAxes[ 0 ] == 0 ? "Standard" : "Inverted";
+					pia[ 1 ].text = "Choose";
+
+					axes = InputHelper.DetectAxes( pgs.inputMethods[ 1 ] );
+
+					if ( axes.x == 1 ) {
+						pgs.invertAxes[ 1 ] = 0;
+					} else if ( axes.x == -1 ) {
+						pgs.invertAxes[ 1 ] = 1; // Invert
+					}
+				} else {
+					pia[ 1 ].text = pgs.invertAxes[ 1 ] == 0 ? "Standard" : "Inverted";
+					StartGame();
+				}
+
 				break;
 			}
-		}
-	}
-
-	static public bool AnyButton(){
-		if(Input.anyKeyDown) return true;
-
-		for(int i = 0; i < 40; ++i){
-			if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return true;
+			case MainMenuState.CharacterSelect:
+				StartGame();
+				break;
 		}
 
-		return false;
-	}
+		Vector3 cpos = Camera.main.transform.position;
+		Vector3 diff = screens[(int)state].transform.position - cpos;
 
-	public PlayerInputMethod DetectInput(){
-		for(int i = 0; i < 20; ++i){
-			if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return PlayerInputMethod.Controller;
-		}
-		for(int i = 20; i < 40; ++i){
-			if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return PlayerInputMethod.Controller2;
-		}
-
-		if(Input.anyKeyDown) return PlayerInputMethod.KeyboardMouse;
-
-		return PlayerInputMethod.None;
+		if(diff.magnitude > 0.01f)
+			Camera.main.transform.position = cpos + diff * 0.1f;
 	}
 
 	public void StartGame(){
 		Application.LoadLevel("game");
+	}
+
+	public void ButtonDown(string buttonName){
+		print(buttonName);
+
+		switch(buttonName){
+			case "start":
+				state = MainMenuState.PlayerJoin;
+				break;
+			case "instruct":
+				state = MainMenuState.Instructions;
+				instructionTimeout = 1f;
+				break;
+			case "back":
+				state = MainMenuState.Start;
+				break;
+			case "quit":
+				Application.Quit();
+				break;
+		}
 	}
 }
