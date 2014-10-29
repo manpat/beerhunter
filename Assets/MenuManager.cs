@@ -23,6 +23,7 @@ public class MenuManager : MonoBehaviour {
 
 	public TextMesh[] pim;
 	public TextMesh[] pia;
+	public TextMesh countdownText;
 
 	public Button[] screenButtons;
 	private int buttonSelected = 0;
