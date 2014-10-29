@@ -18,6 +18,8 @@ public class MenuManager : MonoBehaviour {
 	PersistentGameState pgs;
 	int numPlayersDetected = 0;
 	bool[] inputMethodsUsed = new bool[4]; // PlayerInputMethod
+	bool[] playerReady = new bool[2];
+	float startgameCountdown = 1f;
 
 	public TextMesh[] pim;
 	public TextMesh[] pia;
@@ -80,8 +82,11 @@ public class MenuManager : MonoBehaviour {
 				if(numPlayersDetected == 2) {
 					// state = MainMenuState.CharacterSelect;
 					//StartGame();
-					pgs.invertAxes[ 0 ] = 2;
-					pgs.invertAxes[ 1 ] = 2;
+					pgs.invertAxes[ 0 ] = ControlMode.None;
+					pgs.invertAxes[ 1 ] = ControlMode.None;
+
+					playerReady[0] = false;
+					playerReady[1] = false;
 
 					state = MainMenuState.InvertAxis;
 					return;
@@ -101,32 +106,45 @@ public class MenuManager : MonoBehaviour {
 				break;
 			}
 			case MainMenuState.InvertAxis: {
-				Vector2 axes;
+				Vector2[] axes = new Vector2[2];
+				axes[0] = InputHelper.DetectAxes(pgs.inputMethods[0]);
+				axes[1] = InputHelper.DetectAxes(pgs.inputMethods[1]);
 
-				if ( pgs.invertAxes[ 0 ] == 2 ) { // Player 1
-					pia[ 0 ].text = "Choose";
-
-					axes = InputHelper.DetectAxes( pgs.inputMethods[ 0 ] );
-
-					if ( axes.x == 1 ) {
-						pgs.invertAxes[ 0 ] = 0;
-					} else if ( axes.x == -1 ) {
-						pgs.invertAxes[ 0 ] = 1; // Invert
+				for(int pid = 0; pid < 2; pid++){
+					if(axes[pid].x != 0f){
+						if(axes[pid].x > 0f){
+							pgs.invertAxes[pid] = ControlMode.Inverted;
+						}else{
+							pgs.invertAxes[pid] = ControlMode.Standard;
+						}
 					}
-				} else if ( pgs.invertAxes[ 1 ] == 2 ) { // Player 2
-					pia[ 0 ].text = pgs.invertAxes[ 0 ] == 0 ? "Standard" : "Inverted";
-					pia[ 1 ].text = "Choose";
 
-					axes = InputHelper.DetectAxes( pgs.inputMethods[ 1 ] );
-
-					if ( axes.x == 1 ) {
-						pgs.invertAxes[ 1 ] = 0;
-					} else if ( axes.x == -1 ) {
-						pgs.invertAxes[ 1 ] = 1; // Invert
+					if(!playerReady[pid]){
+						switch(pgs.invertAxes[pid]){
+							case ControlMode.None:
+								pia[pid].text = "Choose";
+								break;
+							case ControlMode.Standard:
+								pia[pid].text = "Standard";
+								break;
+							case ControlMode.Inverted:
+								pia[pid].text = "Inverted";
+								break;
+						}
+					}else{
+						pia[pid].text = "Ready";
 					}
-				} else {
-					pia[ 1 ].text = pgs.invertAxes[ 1 ] == 0 ? "Standard" : "Inverted";
-					StartGame();
+
+					if(InputHelper.DetectAny(pgs.inputMethods[pid]) && axes[pid].x == 0f && pgs.invertAxes[pid] != ControlMode.None){
+						playerReady[pid] = true;
+					}
+				}
+
+				if(playerReady[0] && playerReady[1]){
+					startgameCountdown -= Time.deltaTime;
+
+					if(startgameCountdown <= 0f)
+						StartGame();
 				}
 
 				break;

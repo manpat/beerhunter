@@ -61,4 +61,24 @@ public class InputHelper : MonoBehaviour {
 
 		return axes;
 	}
+
+	static public bool DetectAny( PlayerInputMethod inputMethod ){
+		switch(inputMethod){
+			case PlayerInputMethod.KeyboardMouse:
+				return Input.anyKeyDown;
+
+			case PlayerInputMethod.Controller:
+				for(int i = 0; i < 20; ++i){
+					if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return true;
+				}
+				break;
+			case PlayerInputMethod.Controller2:
+				for(int i = 20; i < 40; ++i){
+					if(Input.GetKeyDown( (KeyCode)(joystickButtonBegin + i) )) return true;
+				}
+				break;
+		}
+
+		return false;
+	}
 }
